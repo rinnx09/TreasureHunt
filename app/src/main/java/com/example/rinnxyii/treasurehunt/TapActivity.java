@@ -39,6 +39,7 @@ public class TapActivity extends AppCompatActivity {
                         Intent returnIntent = new Intent();
                         returnIntent.putExtra("RESULT", true);
                         returnIntent.putExtra("MARK", Tapcount);
+                        returnIntent.putExtra("type","TAP");
                         setResult(Activity.RESULT_OK, returnIntent);
                         finish();
                     } else {
@@ -72,6 +73,7 @@ public class TapActivity extends AppCompatActivity {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("RESULT", false);
                 returnIntent.putExtra("MARK", Tapcount);
+                returnIntent.putExtra("type","TAP");
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }

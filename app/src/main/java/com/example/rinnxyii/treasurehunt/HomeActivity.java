@@ -3,6 +3,7 @@ package com.example.rinnxyii.treasurehunt;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -45,8 +46,10 @@ public class HomeActivity extends AppCompatActivity
     private String missionToPlay = "";
     public static final String MISSION_VALUE = "MISSIONVALUE";
     private ProgressDialog Dialog;
-   private List<Mission> mission = new ArrayList<>();
+    private List<Mission> mission = new ArrayList<>();
 
+    private SharedPreferences sp;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,27 +115,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
 
-             /*   List<Mission> m1 = new ArrayList<>();
-                for (int a = 0; a < mission.size(); a++) {
-                    if (!mission.get(a).getEventMission().equals("")) {
-                        String[] duration = mission.get(a).getEventMission().split("-");
-                        try {
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                            Date startdate = sdf.parse(duration[0]);
-                            Date enddate = sdf.parse(duration[1]);
-                            String strcurrentDate = sdf.format(System.currentTimeMillis());
-                            Date currentDate = sdf.parse(strcurrentDate);
 
-                            if (currentDate.equals(startdate) || currentDate.equals(enddate)) {
-                                m1.add(mission.get(a));
-                            } else if (currentDate.after(startdate) && currentDate.before(enddate)) {
-                                m1.add(mission.get(a));
-                            }
-                        } catch (ParseException e) {
-                            Log.i("error", "parse exception");
-                        }
-                    }
-                }*/
                 Intent intent = new Intent(HomeActivity.this, ScanQRcodeActivity.class);
                 startActivityForResult(intent, request_code);
 
@@ -256,17 +239,44 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // super.onActivityResult(requestCode, resultCode, data);
+         /*    sp = PreferenceManager.getDefaultSharedPreferences(this);
+                                editor = sp.edit();
+
+                                editor.putString("ID",id);
+                                editor.commit();
+
+                                sp.getString("ID", "");*/
         if (request_code == requestCode) {
             if (Activity.RESULT_OK == RESULT_OK) {
                 Boolean mission = data.getBooleanExtra("RESULT", false);
+                String type = data.getStringExtra("type");
                 int mark = data.getIntExtra("MARK", 0);
-                if (mission == true) {
-                    text.setText("Mission Complete");
-                    textviewResult.setText("Well Done");
+                if (!type.equals("SCANQR") && !type.equals("WEFIE")) {
+                    if (mission == true) {
+                        text.setText("Mission Complete");
+                        textviewResult.setText("Well Done");
+                    } else {
+                        text.setText("Mission Failed");
+                        textviewResult.setText("Your score is " + mark);
+                    }
+                } else if (type.equals("WEFIE")) {
+                    if (mission == true) {
+                        text.setText("Mission Complete");
+                        textviewResult.setText("Congration! you get new friend");
+                    } else {
+                        text.setText("Mission Failed");
+                        textviewResult.setText("");
+                    }
                 } else {
-                    text.setText("Mission Failed");
-                    textviewResult.setText("Your score is " + mark);
+                    if (mission == true) {
+                        text.setText("Mission Complete");
+                        textviewResult.setText("Enjoy the event");
+                    } else {
+                        text.setText("Mission Failed");
+                        textviewResult.setText("");
+                    }
                 }
+
             }
         }
     }

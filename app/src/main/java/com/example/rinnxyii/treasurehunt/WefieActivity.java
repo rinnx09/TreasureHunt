@@ -61,6 +61,7 @@ public class WefieActivity extends AppCompatActivity {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("RESULT", true);
                     returnIntent.putExtra("MARK", String.valueOf(faceDetected.getText().toString()));
+                    returnIntent.putExtra("type","WEFIE");
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                 }
@@ -75,6 +76,7 @@ public class WefieActivity extends AppCompatActivity {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("RESULT", false);
                 returnIntent.putExtra("MARK", 0);
+                returnIntent.putExtra("type","WEFIE");
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }

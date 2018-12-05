@@ -37,8 +37,7 @@ public class ScanQRcodeActivity extends AppCompatActivity {
     private Button btnstart, btngiveup;
     private List<Mission> mission = new ArrayList<>();
 
-    SharedPreferences sp;
-    SharedPreferences.Editor editor;
+
     private ProgressDialog Dialog;
 
     @Override
@@ -63,6 +62,7 @@ public class ScanQRcodeActivity extends AppCompatActivity {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("RESULT", true);
                     returnIntent.putExtra("MARK", 0);
+                    returnIntent.putExtra("type","SCANQR");
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                 }
@@ -76,6 +76,7 @@ public class ScanQRcodeActivity extends AppCompatActivity {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("RESULT", false);
                 returnIntent.putExtra("MARK", 0);
+                returnIntent.putExtra("type","SCANQR");
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
@@ -153,13 +154,7 @@ public class ScanQRcodeActivity extends AppCompatActivity {
 
                         if ((currentDate.after(startdate) && currentDate.before(enddate)) || currentDate.equals(startdate) || currentDate.equals(enddate)) {
                             if ((currentTime.after(starttime) && currentTime.before(endtime)) || currentTime.equals(starttime) || currentTime.equals(endtime)) {
-                            /*    sp = PreferenceManager.getDefaultSharedPreferences(this);
-                                editor = sp.edit();
 
-                                editor.putString("ID",id);
-                                editor.commit();
-
-                                sp.getString("ID", "");*/
 
                                 String id = obj.getString("ID");
                                 List<Mission> em = new ArrayList<>();

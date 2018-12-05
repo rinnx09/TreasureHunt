@@ -47,6 +47,7 @@ public class ShakeActivity extends AppCompatActivity implements ShakeDetector.Li
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("RESULT", true);
                     returnIntent.putExtra("MARK", shakecount);
+                    returnIntent.putExtra("type","SHAKE");
                     setResult(Activity.RESULT_OK, returnIntent);
                     shakecount = 1;
                     finish();
@@ -79,6 +80,7 @@ public class ShakeActivity extends AppCompatActivity implements ShakeDetector.Li
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("RESULT", false);
                 returnIntent.putExtra("MARK", shakecount);
+                returnIntent.putExtra("type","SHAKE");
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
