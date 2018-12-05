@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,11 +41,11 @@ public class HomeActivity extends AppCompatActivity
     private static final String TAG = "1";
     private static final int request_code = 100;
     private TextView text, textviewResult;
-    private Button btnmission;
+    private Button btnmission, btnQR;
     private String missionToPlay = "";
     public static final String MISSION_VALUE = "MISSIONVALUE";
     private ProgressDialog Dialog;
-    List<Mission> mission = new ArrayList<>();
+   private List<Mission> mission = new ArrayList<>();
 
 
     @Override
@@ -52,7 +53,7 @@ public class HomeActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -64,6 +65,7 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         btnmission = (Button) findViewById(R.id.mission);
+        btnQR = (Button) findViewById(R.id.buttonQR);
         textviewResult = (TextView) findViewById(R.id.tresult);
         text = (TextView) findViewById(R.id.textViewMission);
         Dialog = new ProgressDialog(HomeActivity.this);
@@ -85,14 +87,14 @@ public class HomeActivity extends AppCompatActivity
                     String type = missions.child("mission_Type").getValue().toString();
                     String value = missions.child("mission_Value").getValue().toString();
                     String eventMission;
-                    String ID="";
+                    String ID = "";
                     if (missions.child("event_mission").exists()) {
                         eventMission = missions.child("event_mission").getValue().toString();
                     } else {
                         eventMission = null;
                     }
-                    if(missions.hasChild("QR_ID")){
-                        ID=missions.child("QR_ID").getValue().toString();
+                    if (missions.hasChild("QR_ID")) {
+                        ID = missions.child("QR_ID").getValue().toString();
                     }
                     Mission m = new Mission(missions.getKey(), type, value, eventMission);
                     m.setID(ID);
@@ -103,17 +105,17 @@ public class HomeActivity extends AppCompatActivity
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Toast.makeText(getApplicationContext(), "No internet connection", Toast.LENGTH_SHORT);
             }
         });
-        btnmission.setOnClickListener(new View.OnClickListener() {
+        btnQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean Inevent = false;
+
+             /*   List<Mission> m1 = new ArrayList<>();
                 for (int a = 0; a < mission.size(); a++) {
                     if (!mission.get(a).getEventMission().equals("")) {
                         String[] duration = mission.get(a).getEventMission().split("-");
-
                         try {
                             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                             Date startdate = sdf.parse(duration[0]);
@@ -122,60 +124,55 @@ public class HomeActivity extends AppCompatActivity
                             Date currentDate = sdf.parse(strcurrentDate);
 
                             if (currentDate.equals(startdate) || currentDate.equals(enddate)) {
-                                missionToPlay = mission.get(a).getMissionIndex();
-                                Inevent = true;
-                                break;
+                                m1.add(mission.get(a));
                             } else if (currentDate.after(startdate) && currentDate.before(enddate)) {
-                                missionToPlay = mission.get(a).getMissionIndex();
-                                Inevent = true;
-                                break;
+                                m1.add(mission.get(a));
                             }
-
                         } catch (ParseException e) {
                             Log.i("error", "parse exception");
                         }
                     }
-                }
+                }*/
+                Intent intent = new Intent(HomeActivity.this, ScanQRcodeActivity.class);
+                startActivityForResult(intent, request_code);
+
+
+            }
+        });
+        btnmission.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
                 List<Mission> m2 = new ArrayList<>();
-                if (Inevent == false) {
-
-                    for (int x = 0; x < mission.size(); x++) {
-                        if (mission.get(x).getEventMission().equals("")) {
-                            m2.add(mission.get(x));
-                        }
+                for (int x = 0; x < mission.size(); x++) {
+                    if (mission.get(x).getEventMission().equals("")) {
+                        m2.add(mission.get(x));
                     }
-                    Random rand = new Random();
-                    int index = rand.nextInt(m2.size());
-                    missionToPlay = m2.get(index).getMissionIndex();
-
-
                 }
+                Random rand = new Random();
+                int index = rand.nextInt(m2.size());
+                missionToPlay = m2.get(index).getMissionIndex();
 
                 for (int m = 0; m < mission.size(); m++) {
                     if (mission.get(m).getMissionIndex().equals(missionToPlay)) {
                         if (mission.get(m).getMissionType().equals("Shaking")) {
-                            Intent intent=new Intent(HomeActivity.this,ShakeActivity.class);
-                            intent.putExtra(MISSION_VALUE,Integer.parseInt(mission.get(m).getMissionValue()));
-                            startActivityForResult(intent,request_code);
+                            Intent intent = new Intent(HomeActivity.this, ShakeActivity.class);
+                            intent.putExtra(MISSION_VALUE, Integer.parseInt(mission.get(m).getMissionValue()));
+                            startActivityForResult(intent, request_code);
                             break;
 
                         } else if (mission.get(m).getMissionType().equals("Tapping")) {
-                            Intent intent=new Intent(HomeActivity.this,TapActivity.class);
-                            intent.putExtra(MISSION_VALUE,Integer.parseInt(mission.get(m).getMissionValue()));
-                            startActivityForResult(intent,request_code);
+                            Intent intent = new Intent(HomeActivity.this, TapActivity.class);
+                            intent.putExtra(MISSION_VALUE, Integer.parseInt(mission.get(m).getMissionValue()));
+                            startActivityForResult(intent, request_code);
                             break;
 
                         } else if (mission.get(m).getMissionType().equals("Wefie")) {
                             Intent intent = new Intent(HomeActivity.this, WefieActivity.class);
                             intent.putExtra(MISSION_VALUE, Integer.parseInt(mission.get(m).getMissionValue()));
-                            startActivityForResult(intent,request_code);
+                            startActivityForResult(intent, request_code);
 
                             break;
-                        } else if (mission.get(m).getMissionType().equals("Scan QR code")) {
-                         /*   Intent intent=new Intent(HomeActivity.this,ScanQRcodeActivity.class);
-                            intent.putExtra("ID",mission.get(m).getID());
-                            startActivityForResult(intent,request_code);
-                            break;*/
                         }
                     }
                 }
@@ -183,7 +180,6 @@ public class HomeActivity extends AppCompatActivity
 
             }
         });
-
 
 
     }
@@ -210,7 +206,7 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_notifications) {
-            Intent intent = new Intent (HomeActivity.this, NotificationsActivity.class);
+            Intent intent = new Intent(HomeActivity.this, NotificationsActivity.class);
             startActivity(intent);
             return true;
         }
@@ -250,11 +246,13 @@ public class HomeActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     @Override
     protected void onResume() {
         super.onResume();
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // super.onActivityResult(requestCode, resultCode, data);
