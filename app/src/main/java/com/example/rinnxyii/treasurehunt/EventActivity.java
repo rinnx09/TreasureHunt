@@ -101,11 +101,6 @@ public class EventActivity extends AppCompatActivity
                 }
                 break;
 
-            case R.id.nav_user_profile:
-                Intent intentUserProfile = new Intent(EventActivity.this, UserProfileActivity.class);
-                startActivity(intentUserProfile);
-                break;
-
             case R.id.nav_map:
                 Intent intentMap = new Intent(EventActivity.this, MapActivity.class);
                 startActivity(intentMap);

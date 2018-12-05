@@ -211,10 +211,6 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.nav_user_profile:
-                Intent intentUserProfile = new Intent(HomeActivity.this, UserProfileActivity.class);
-                startActivity(intentUserProfile);
-                break;
             case R.id.nav_event:
                 Intent intentEvent = new Intent(HomeActivity.this, EventActivity.class);
                 startActivity(intentEvent);

@@ -103,11 +103,6 @@ public class RankActivity extends AppCompatActivity
                 }
                 break;
 
-            case R.id.nav_user_profile:
-                Intent intentUserProfile = new Intent(RankActivity.this, UserProfileActivity.class);
-                startActivity(intentUserProfile);
-                break;
-
             case R.id.nav_event:
                 Intent intentEvent = new Intent(RankActivity.this, EventActivity.class);
                 startActivity(intentEvent);
