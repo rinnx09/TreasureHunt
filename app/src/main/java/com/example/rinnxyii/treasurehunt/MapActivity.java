@@ -237,6 +237,7 @@ public class MapActivity extends AppCompatActivity
             public void onClick(View view) {
                 Log.d(TAG, "onClick: clicked gps icon");
                 getDeviceLocation();
+                mSearchText.setText("");
             }
         });
 
