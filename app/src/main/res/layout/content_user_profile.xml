@@ -17,8 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="176dp"
-        android:layout_marginTop="214dp"
+        android:layout_marginStart="229dp"
+        android:layout_marginTop="251dp"
         android:text="" />
 
     <TextView
@@ -27,7 +27,18 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/textViewName"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="70dp"
+        android:layout_marginStart="123dp"
+        android:layout_marginBottom="0dp"
         android:text="@string/name" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="135dp"
+        android:layout_marginTop="97dp"
+        tools:srcCompat="@tools:sample/avatars" />
 
 </RelativeLayout>

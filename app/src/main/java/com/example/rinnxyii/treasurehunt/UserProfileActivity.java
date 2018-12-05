@@ -47,11 +47,13 @@ public class UserProfileActivity extends AppCompatActivity
 
         textViewName = (TextView) findViewById(R.id.textViewName);
 
+        //get user nickname into Text View
         sp = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sp.edit();
 
         nickname = sp.getString(getString(R.string.preference_nickname), "");
         textViewName.setText(nickname);
+
 
 
     }
@@ -131,4 +133,6 @@ public class UserProfileActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
 }

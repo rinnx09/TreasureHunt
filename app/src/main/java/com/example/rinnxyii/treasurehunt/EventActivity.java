@@ -1,7 +1,9 @@
 package com.example.rinnxyii.treasurehunt;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
@@ -12,12 +14,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class EventActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawer;
     NavigationView navigationView;
     Toolbar toolbar = null;
+    SharedPreferences sp;
+    SharedPreferences.Editor editor;
+    ImageView imageViewProfilePicture;
+    TextView textViewNickname, textViewScore;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +44,8 @@ public class EventActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setNavHeader();
     }
 
     @Override
@@ -109,5 +121,34 @@ public class EventActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
             return true;
         }
+
+    public void setNavHeader(){
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sp.edit();
+
+        View headView = navigationView.getHeaderView(0);
+        imageViewProfilePicture = headView.findViewById(R.id.imageViewProfilePicture);
+        textViewNickname = headView.findViewById(R.id.textViewNickname);
+        textViewScore = headView.findViewById(R.id.textViewScore);
+
+        String nickname = sp.getString(getString(R.string.preference_nickname),"");
+        textViewNickname.setText(nickname);
+
+        textViewScore.setText("Score: 120");
+
+        String picNo = sp.getString(getString(R.string.preference_profilepic),"");
+
+        if (picNo.equals("1")){
+            imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_girl_1));
+        }else   if (picNo.equals("2")){
+            imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_girl_2));
+        }else   if (picNo.equals("3")){
+            imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_1));
+        }else   if (picNo.equals("4")){
+            imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_2));
+        }
+
+    }
+
 
 }

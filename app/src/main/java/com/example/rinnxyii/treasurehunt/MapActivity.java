@@ -2,11 +2,13 @@ package com.example.rinnxyii.treasurehunt;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -54,6 +56,11 @@ public class MapActivity extends AppCompatActivity
     DrawerLayout drawer;
     NavigationView navigationView;
     Toolbar toolbar = null;
+    SharedPreferences sp;
+    SharedPreferences.Editor editor;
+    ImageView imageViewProfilePicture;
+    TextView textViewNickname, textViewScore;
+
 
     private static final String TAG = "MapActivity";
 
@@ -92,6 +99,8 @@ public class MapActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setNavHeader();
 
         //map
         mSearchText = (AutoCompleteTextView) findViewById(R.id.input_search);
@@ -373,4 +382,33 @@ public class MapActivity extends AppCompatActivity
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+    public void setNavHeader(){
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sp.edit();
+
+        View headView = navigationView.getHeaderView(0);
+        imageViewProfilePicture = headView.findViewById(R.id.imageViewProfilePicture);
+        textViewNickname = headView.findViewById(R.id.textViewNickname);
+        textViewScore = headView.findViewById(R.id.textViewScore);
+
+        String nickname = sp.getString(getString(R.string.preference_nickname),"");
+        textViewNickname.setText(nickname);
+
+        textViewScore.setText("Score: 120");
+
+        String picNo = sp.getString(getString(R.string.preference_profilepic),"");
+
+        if (picNo.equals("1")){
+            imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_girl_1));
+        }else   if (picNo.equals("2")){
+            imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_girl_2));
+        }else   if (picNo.equals("3")){
+            imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_1));
+        }else   if (picNo.equals("4")){
+            imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_2));
+        }
+
+    }
+
 }
