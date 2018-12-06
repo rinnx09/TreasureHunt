@@ -4,11 +4,13 @@
         android:name="com.google.android.gms.vision.DEPENDENCIES"
         android:value="face" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -36,15 +38,6 @@
             android:name=".HomeActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".UserProfileActivity"
-            android:label="@string/title_activity_user_profile"
-            android:parentActivityName=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.rinnxyii.treasurehunt.HomeActivity" />
-        </activity>
         <activity
             android:name=".EventActivity"
             android:label="@string/title_activity_event"
