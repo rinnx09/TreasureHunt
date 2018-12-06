@@ -236,17 +236,19 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sp.edit();
+        textViewScore.setText("Score: "+String.valueOf(sp.getInt("SCORE",0)));
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // super.onActivityResult(requestCode, resultCode, data);
-         /*    sp = PreferenceManager.getDefaultSharedPreferences(this);
-                                editor = sp.edit();
-                                editor.putString("ID",id);
-                                editor.commit();
-                                sp.getString("ID", "");*/
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sp.edit();
+        int score=sp.getInt("SCORE",0);
+
         if (request_code == requestCode) {
             if (Activity.RESULT_OK == RESULT_OK) {
                 Boolean mission = data.getBooleanExtra("RESULT", false);
@@ -256,6 +258,7 @@ public class HomeActivity extends AppCompatActivity
                     if (mission == true) {
                         text.setText("Mission Complete");
                         textviewResult.setText("Well Done");
+                      score+=5;
                     } else {
                         text.setText("Mission Failed");
                         textviewResult.setText("Your score is " + mark);
@@ -264,6 +267,7 @@ public class HomeActivity extends AppCompatActivity
                     if (mission == true) {
                         text.setText("Mission Complete");
                         textviewResult.setText("Congration! you get new friend");
+                        score+=5;
                     } else {
                         text.setText("Mission Failed");
                         textviewResult.setText("");
@@ -272,6 +276,7 @@ public class HomeActivity extends AppCompatActivity
                     if (mission == true) {
                         text.setText("Mission Complete");
                         textviewResult.setText("Enjoy the event");
+                        score+=15;
                     } else {
                         text.setText("Mission Failed");
                         textviewResult.setText("");
@@ -279,10 +284,12 @@ public class HomeActivity extends AppCompatActivity
                 }
 
             }
+            editor.putInt("SCORE",score);
+            editor.commit();
         }
     }
 
-    public void setNavHeader(){
+    public void setNavHeader() {
         sp = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sp.edit();
 
@@ -291,20 +298,20 @@ public class HomeActivity extends AppCompatActivity
         textViewNickname = headView.findViewById(R.id.textViewNickname);
         textViewScore = headView.findViewById(R.id.textViewScore);
 
-        String nickname = sp.getString(getString(R.string.preference_nickname),"");
+        String nickname = sp.getString(getString(R.string.preference_nickname), "");
         textViewNickname.setText(nickname);
 
-        textViewScore.setText("Score: 120");
 
-        String picNo = sp.getString(getString(R.string.preference_profilepic),"");
 
-        if (picNo.equals("1")){
+        String picNo = sp.getString(getString(R.string.preference_profilepic), "");
+
+        if (picNo.equals("1")) {
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_girl_1));
-        }else   if (picNo.equals("2")){
+        } else if (picNo.equals("2")) {
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_girl_2));
-        }else   if (picNo.equals("3")){
+        } else if (picNo.equals("3")) {
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_1));
-        }else   if (picNo.equals("4")){
+        } else if (picNo.equals("4")) {
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_2));
         }
 
