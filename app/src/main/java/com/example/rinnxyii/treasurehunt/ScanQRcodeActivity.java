@@ -2,12 +2,14 @@ package com.example.rinnxyii.treasurehunt;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,6 +26,14 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +58,7 @@ public class ScanQRcodeActivity extends AppCompatActivity {
         btnstart = (Button) findViewById(R.id.buttonstart4);
         btngiveup = (Button) findViewById(R.id.buttonGiveup4);
         textResult = (TextView) findViewById(R.id.textViewQRresult);
+
         //intializing scan object
         qrScan = new IntentIntegrator(this);
 
@@ -62,7 +73,7 @@ public class ScanQRcodeActivity extends AppCompatActivity {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("RESULT", true);
                     returnIntent.putExtra("MARK", 0);
-                    returnIntent.putExtra("type","SCANQR");
+                    returnIntent.putExtra("type", "SCANQR");
                     setResult(Activity.RESULT_OK, returnIntent);
                     finish();
                 }
@@ -76,7 +87,7 @@ public class ScanQRcodeActivity extends AppCompatActivity {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("RESULT", false);
                 returnIntent.putExtra("MARK", 0);
-                returnIntent.putExtra("type","SCANQR");
+                returnIntent.putExtra("type", "SCANQR");
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
@@ -168,13 +179,33 @@ public class ScanQRcodeActivity extends AppCompatActivity {
 
                                     if (em.get(y).getID().equals(id)) {
                                         IDexist = true;
-                                        textResult.append(em.get(y).getID());
                                     }
                                 }
                                 if (IDexist) {
-                                    btnstart.setText("Complete");
-                                    textResult.setText("Mission Complete");
-                                    btngiveup.setEnabled(false);
+                                    String value = readFromFile(getApplicationContext());
+                                    if (value.equals("")) {
+                                        writeToFile("/" + id, getApplicationContext());
+                                        btnstart.setText("Complete");
+                                        textResult.setText("Mission Complete");
+                                        btngiveup.setEnabled(false);
+                                    } else {
+                                        String id_array[] = value.split("/");
+                                        boolean duplicate = false;
+                                        for (int x = 0; x < id_array.length; x++) {
+                                            if (id_array[x].equals(id)) {
+                                                duplicate = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!duplicate) {
+                                            btnstart.setText("Complete");
+                                            textResult.setText("Mission Complete");
+                                            btngiveup.setEnabled(false);
+                                        }else{
+                                            textResult.setText("You had complete this mission before");
+                                        }
+                                    }
+
                                 } else {
                                     textResult.setText("This QR code is invalid");
                                     btnstart.setText("Try again");
@@ -204,5 +235,44 @@ public class ScanQRcodeActivity extends AppCompatActivity {
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private void writeToFile(String data, Context context) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput("myQR_ID.txt", Context.MODE_PRIVATE));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        } catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+    }
+
+    private String readFromFile(Context context) {
+
+        String ret = "";
+
+        try {
+            InputStream inputStream = context.openFileInput("myQR_ID.txt");
+
+            if (inputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ((receiveString = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(receiveString);
+                }
+
+                inputStream.close();
+                ret = stringBuilder.toString();
+            }
+        } catch (FileNotFoundException e) {
+            Log.e("login activity", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("login activity", "Can not read file: " + e.toString());
+        }
+
+        return ret;
     }
 }

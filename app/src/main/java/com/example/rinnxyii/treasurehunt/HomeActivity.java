@@ -292,10 +292,7 @@ public class HomeActivity extends AppCompatActivity
         textViewScore = headView.findViewById(R.id.textViewScore);
 
         String nickname = sp.getString(getString(R.string.preference_nickname),"");
-
-        if (!nickname.equals("")){
-            textViewNickname.setText(nickname);
-        }
+        textViewNickname.setText(nickname);
 
         textViewScore.setText("Score: 120");
 
