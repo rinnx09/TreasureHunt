@@ -1,33 +1,54 @@
 package com.example.rinnxyii.treasurehunt;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class EventActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     DrawerLayout drawer;
     NavigationView navigationView;
     Toolbar toolbar = null;
+
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     ImageView imageViewProfilePicture;
     TextView textViewNickname, textViewScore;
 
+    ListView listView;
+    FirebaseDatabase database;
+    DatabaseReference ref;
+    ArrayList<String> list;
+    ArrayAdapter<String> adapter;
+    Events event;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +67,51 @@ public class EventActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         setNavHeader();
+
+        //ListView
+        event = new Events();
+        listView = (ListView) findViewById(R.id.listView);
+        database = FirebaseDatabase.getInstance();
+        ref = database.getReference("Events");
+        list =new ArrayList<>();
+        adapter = new ArrayAdapter<String>(this,R.layout.events_info,R.id.EventsInfo,list);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    event = ds.getValue(Events.class);
+                    event.setEvent_name(ds.getKey());
+                    list.add(event.getEvent_name());
+
+                }
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(EventActivity.this);
+                        builder.setCancelable(true);
+                        builder.setTitle(event.getEvent_name());
+
+                        String eventDetails = "Testing in progress";
+
+                        builder.setMessage(eventDetails);
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                listView.showContextMenu();
+                            }
+                        });
+                        builder.show();
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     @Override
@@ -127,7 +193,9 @@ public class EventActivity extends AppCompatActivity
         textViewScore = headView.findViewById(R.id.textViewScore);
 
         String nickname = sp.getString(getString(R.string.preference_nickname),"");
-        textViewNickname.setText(nickname);
+        if (!nickname.equals("")){
+            textViewNickname.setText(nickname);
+        }
 
         textViewScore.setText("Score: 120");
 
@@ -142,6 +210,7 @@ public class EventActivity extends AppCompatActivity
         }else   if (picNo.equals("4")){
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_2));
         }
+
 
     }
 

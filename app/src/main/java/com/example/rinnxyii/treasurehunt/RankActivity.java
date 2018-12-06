@@ -131,7 +131,9 @@ public class RankActivity extends AppCompatActivity
         textViewScore = headView.findViewById(R.id.textViewScore);
 
         String nickname = sp.getString(getString(R.string.preference_nickname),"");
-        textViewNickname.setText(nickname);
+        if (!nickname.equals("")){
+            textViewNickname.setText(nickname);
+        }
 
         textViewScore.setText("Score: 120");
 
