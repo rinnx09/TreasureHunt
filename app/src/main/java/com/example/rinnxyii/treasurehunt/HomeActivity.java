@@ -50,7 +50,6 @@ public class HomeActivity extends AppCompatActivity
     SharedPreferences.Editor editor;
     ImageView imageViewProfilePicture;
     TextView textViewNickname, textViewScore;
-
     private static final String TAG = "1";
     private static final int request_code = 100;
     private TextView text, textviewResult;
@@ -290,7 +289,7 @@ public class HomeActivity extends AppCompatActivity
                     }
                 }
 
-                if(mission==true){
+                if (mission == true) {
                     editor.putInt("SCORE", score);
                     editor.commit();
                     Dialog.setMessage("Loading...");
@@ -298,25 +297,22 @@ public class HomeActivity extends AppCompatActivity
                     rank.clear();
                     final String nickname = sp.getString(getString(R.string.preference_nickname), "");
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                     DatabaseReference rankRef = database.getReference();
+                    DatabaseReference rankRef = database.getReference();
                     rankRef.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             DataSnapshot rankSnapshot = dataSnapshot.child("Rank");
                             Iterable<DataSnapshot> rankChildren = rankSnapshot.getChildren();
                             for (DataSnapshot ranks : rankChildren) {
-                                String name="";
-                                String s="";
-                                if(ranks.child("Name").exists()&&ranks.child("Score").exists()){
+                                String name = "";
+                                String s = "";
+                                if (ranks.child("Name").exists() && ranks.child("Score").exists()) {
                                     name = ranks.child("Name").getValue().toString();
                                     s = ranks.child("Score").getValue().toString();
                                 }
                                 Rank r = new Rank(ranks.getKey(), name, s);
                                 rank.add(r);
-
-
                             }
-
                             int temp1 = sp.getInt("SCORE", 0);
                             int temp2;
                             String tempname = nickname;
@@ -339,10 +335,8 @@ public class HomeActivity extends AppCompatActivity
                                 }
                             }
 
-
                             updateRanking();
                             Dialog.dismiss();
-
                         }
 
                         @Override
@@ -352,8 +346,6 @@ public class HomeActivity extends AppCompatActivity
                     });
 
 
-
-
                 }
             }
 
@@ -361,45 +353,29 @@ public class HomeActivity extends AppCompatActivity
         }
 
     }
-private void updateRanking(){
-        for(int c=0;c<rank.size();c++){
-            textviewResult.append("\n"+rank.get(c).getName()+" "+rank.get(c).getScore()+"\n");
+
+    private void updateRanking() {
+
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sp.edit();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference rankRef1 = database.getReference();
+
+        try {
+         /*   rankRef1.child("Rank/" + rank.get(1).getPlace() + "/Name").setValue(rank.get(1).getName());
+            rankRef1.child("Rank/" + rank.get(1).getPlace() + "/Score").setValue(rank.get(1).getScore());
+            rankRef2.child("Rank/" + rank.get(2).getPlace() + "/Name").setValue(rank.get(2).getName());
+            rankRef2.child("Rank/" + rank.get(2).getPlace() + "/Score").setValue(rank.get(2).getScore());
+            rankRef3.child("Rank/" + rank.get(3).getPlace() + "/Name").setValue(rank.get(3).getName());
+            rankRef3.child("Rank/" + rank.get(3).getPlace() + "/Score").setValue(rank.get(3).getScore());
+*/
+        } catch (Exception e) {
+            e.printStackTrace();
         }
- /*   sp = PreferenceManager.getDefaultSharedPreferences(this);
-    editor = sp.edit();
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-     final DatabaseReference rankRef = database.getReference();
-        rankRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                DataSnapshot rankSnapshot = dataSnapshot.child("Rank");
-                Iterable<DataSnapshot> rankChildren = rankSnapshot.getChildren();
-                for (DataSnapshot ranks : rankChildren) {
 
-                    for (int a = 0; a < rank.size(); a++) {
 
-                        if (ranks.getKey().equals(rank.get(a).getPlace())) {
-                            try {
-                                rankRef.child("Rank/"+rank.get(a).getPlace()+"/Name").setValue(rank.get(a).getName());
-                                rankRef.child("Rank/"+rank.get(a).getPlace()+"/Score").setValue(rank.get(a).getScore());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            break;
-                        }
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getApplicationContext(), "No internet connection", Toast.LENGTH_SHORT);
-            }
-        });*/
-
-}
+    }
 
     public void setNavHeader() {
         sp = PreferenceManager.getDefaultSharedPreferences(this);
