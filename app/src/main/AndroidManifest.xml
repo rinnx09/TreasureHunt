@@ -1,8 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.rinnxyii.treasurehunt">
+
     <meta-data
         android:name="com.google.android.gms.vision.DEPENDENCIES"
         android:value="face" />
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -10,7 +13,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -37,7 +39,7 @@
         <activity
             android:name=".HomeActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".EventActivity"
             android:label="@string/title_activity_event"
@@ -66,7 +68,7 @@
                 android:value="com.example.rinnxyii.treasurehunt.HomeActivity" />
         </activity>
         <activity android:name=".NotificationsActivity" />
-        <activity android:name=".NicknameActivity"></activity>
+        <activity android:name=".NicknameActivity" />
         <activity
             android:name=".TapActivity"
             android:label="Tap it"
@@ -77,9 +79,10 @@
             android:parentActivityName=".HomeActivity" />
         <activity
             android:name=".ScanQRcodeActivity"
-            android:parentActivityName=".HomeActivity"></activity>
-        <activity android:name=".ShakeActivity"
-            android:parentActivityName=".HomeActivity" ></activity>
+            android:parentActivityName=".HomeActivity" />
+        <activity
+            android:name=".ShakeActivity"
+            android:parentActivityName=".HomeActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -90,5 +93,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
     </application>
+
 </manifest>

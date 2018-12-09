@@ -23,7 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -77,7 +76,7 @@ public class EventActivity extends AppCompatActivity
         adapter = new ArrayAdapter<String>(this,R.layout.events_info,R.id.EventsInfo,list);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     event = ds.getValue(Events.class);
                     event.setEvent_name(ds.getKey());
@@ -88,13 +87,33 @@ public class EventActivity extends AppCompatActivity
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                         AlertDialog.Builder builder = new AlertDialog.Builder(EventActivity.this);
                         builder.setCancelable(true);
-                        builder.setTitle(event.getEvent_name());
+                        String eventTitle =  listView.getItemAtPosition(position).toString();
+                        builder.setTitle(eventTitle);
 
-                        String eventDetails = "Testing in progress";
+                        String date = "";
+                        String desc = "";
+                        String location = "";
+                        String time = "";
+                        String contact ="";
+                        String handler_name = "";
 
+                        for (DataSnapshot childDS : dataSnapshot.getChildren()){
+                            if(childDS.getKey().equals(eventTitle)){
+                               date = childDS.child("event_date").getValue().toString();
+                               desc = childDS.child("event_description").getValue().toString();
+                               location = childDS.child("event_location").getValue().toString();
+                               time = childDS.child("event_time").getValue().toString();
+                               contact = childDS.child("handler_contactNo").getValue().toString();
+                               handler_name = childDS.child("handler_name").getValue().toString();
+                            }
+                        }
+
+                        String eventDetails = "Description: "  +desc + "\n" +"Date: " + date + "\n" + "Time: " + time + "\n" +  "Venue: " + location + "\n" + "Contact: " + contact + " (" + handler_name + ")";
                         builder.setMessage(eventDetails);
+
                         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -210,9 +229,5 @@ public class EventActivity extends AppCompatActivity
         }else   if (picNo.equals("4")){
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_2));
         }
-
-
     }
-
-
 }
