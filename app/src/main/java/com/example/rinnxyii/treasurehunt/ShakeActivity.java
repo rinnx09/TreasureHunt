@@ -79,7 +79,7 @@ public class ShakeActivity extends AppCompatActivity implements ShakeDetector.Li
             public void onClick(View v) {
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("RESULT", false);
-                returnIntent.putExtra("MARK", shakecount);
+                returnIntent.putExtra("MARK", 0);
                 returnIntent.putExtra("type","SHAKE");
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();

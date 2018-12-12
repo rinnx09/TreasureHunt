@@ -1,9 +1,11 @@
 package com.example.rinnxyii.treasurehunt;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
@@ -17,6 +19,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RankActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -26,14 +38,20 @@ public class RankActivity extends AppCompatActivity
     SharedPreferences sp;
     SharedPreferences.Editor editor;
     ImageView imageViewProfilePicture;
-    TextView textViewNickname, textViewScore;
-
+    TextView textViewNickname, textViewScore,textfirst,textsecond,textthird,textscore;
+    private ProgressDialog Dialog;
+    private List<Rank> rank = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rank);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Dialog = new ProgressDialog(RankActivity.this);
+        textfirst=(TextView)findViewById(R.id.textViewChampion);
+        textsecond=(TextView)findViewById(R.id.textViewSecondPlace);
+        textthird=(TextView)findViewById(R.id.textViewThirdPlace);
+        textscore=(TextView)findViewById(R.id.textViewUserPoint);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -45,6 +63,58 @@ public class RankActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
        setNavHeader();
+
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sp.edit();
+        int score=sp.getInt("SCORE",0);
+        textscore.append(" "+String.valueOf(score));
+
+        Dialog.setMessage("Loading...");
+        Dialog.show();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference rankRef = database.getReference();
+
+        rankRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot rankSnapshot = dataSnapshot.child("Rank");
+                Iterable<DataSnapshot> rankChildren = rankSnapshot.getChildren();
+
+
+                for (DataSnapshot ranks : rankChildren) {
+                    String name="";
+                    String score="";
+                    if(ranks.child("Name").exists()&&ranks.child("Score").exists()){
+                        name=ranks.child("Name").getValue().toString();
+                        score=ranks.child("Score").getValue().toString();
+                    }
+
+                    Rank r = new Rank(ranks.getKey(),name,score);
+
+                rank.add(r);
+                }
+
+                Dialog.dismiss();
+                for(int a=0;a<rank.size();a++){
+                    if(rank.get(a).getPlace().equals("1")){
+                        textfirst.setText(rank.get(a).getName()+" "+rank.get(a).getScore());
+                    }else if(rank.get(a).getPlace().equals("2")){
+                        textsecond.setText(rank.get(a).getName()+" "+rank.get(a).getScore());
+                    }else if(rank.get(a).getPlace().equals("3")){
+                        textthird.setText(rank.get(a).getName()+" "+rank.get(a).getScore());
+                    }
+                }
+                rank.clear();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), "No internet connection", Toast.LENGTH_SHORT);
+            }
+        });
+
+
+
     }
 
     @Override
@@ -150,5 +220,12 @@ public class RankActivity extends AppCompatActivity
         }
 
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sp.edit();
+        textViewScore.setText("Score: "+String.valueOf(sp.getInt("SCORE",0)));
 
+    }
 }

@@ -13,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,18 +20,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class HomeActivity extends AppCompatActivity
@@ -45,7 +41,6 @@ public class HomeActivity extends AppCompatActivity
     SharedPreferences.Editor editor;
     ImageView imageViewProfilePicture;
     TextView textViewNickname, textViewScore;
-
     private static final String TAG = "1";
     private static final int request_code = 100;
     private TextView text, textviewResult;
@@ -54,7 +49,7 @@ public class HomeActivity extends AppCompatActivity
     public static final String MISSION_VALUE = "MISSIONVALUE";
     private ProgressDialog Dialog;
     private List<Mission> mission = new ArrayList<>();
-
+    private List<Rank> rank = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +105,8 @@ public class HomeActivity extends AppCompatActivity
                     m.setID(ID);
                     mission.add(m);
                 }
-                Dialog.hide();
+
+                Dialog.dismiss();
             }
 
             @Override
@@ -121,12 +117,8 @@ public class HomeActivity extends AppCompatActivity
         btnQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 Intent intent = new Intent(HomeActivity.this, ScanQRcodeActivity.class);
                 startActivityForResult(intent, request_code);
-
-
             }
         });
         btnmission.setOnClickListener(new View.OnClickListener() {
@@ -166,12 +158,8 @@ public class HomeActivity extends AppCompatActivity
                         }
                     }
                 }
-
-
             }
         });
-
-
     }
 
     @Override
@@ -236,17 +224,19 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sp.edit();
+        textViewScore.setText("Score: " + String.valueOf(sp.getInt("SCORE", 0)));
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // super.onActivityResult(requestCode, resultCode, data);
-         /*    sp = PreferenceManager.getDefaultSharedPreferences(this);
-                                editor = sp.edit();
-                                editor.putString("ID",id);
-                                editor.commit();
-                                sp.getString("ID", "");*/
+        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sp.edit();
+        int score = sp.getInt("SCORE", 0);
+
         if (request_code == requestCode) {
             if (Activity.RESULT_OK == RESULT_OK) {
                 Boolean mission = data.getBooleanExtra("RESULT", false);
@@ -256,6 +246,7 @@ public class HomeActivity extends AppCompatActivity
                     if (mission == true) {
                         text.setText("Mission Complete");
                         textviewResult.setText("Well Done");
+                        score += 5;
                     } else {
                         text.setText("Mission Failed");
                         textviewResult.setText("Your score is " + mark);
@@ -264,6 +255,7 @@ public class HomeActivity extends AppCompatActivity
                     if (mission == true) {
                         text.setText("Mission Complete");
                         textviewResult.setText("Congration! you get new friend");
+                        score += 5;
                     } else {
                         text.setText("Mission Failed");
                         textviewResult.setText("");
@@ -272,17 +264,114 @@ public class HomeActivity extends AppCompatActivity
                     if (mission == true) {
                         text.setText("Mission Complete");
                         textviewResult.setText("Enjoy the event");
+                        score += 15;
                     } else {
                         text.setText("Mission Failed");
                         textviewResult.setText("");
                     }
                 }
 
+                if (mission == true) {
+                    editor.putInt("SCORE", score);
+                    editor.commit();
+                    Dialog.setMessage("Loading...");
+                    Dialog.show();
+
+                    //update
+                    final String nickname = sp.getString(getString(R.string.preference_nickname), "");
+                    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    final DatabaseReference rankRef = database.getReference();
+                    rankRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            DataSnapshot rankSnapshot = dataSnapshot.child("Rank");
+                            Iterable<DataSnapshot> rankChildren = rankSnapshot.getChildren();
+
+                            for (DataSnapshot ranks : rankChildren) {
+                                String name = "";
+                                String s = "";
+
+                                if (ranks.child("Name").exists() && ranks.child("Score").exists()) {
+                                    name = ranks.child("Name").getValue().toString();
+                                    s = ranks.child("Score").getValue().toString();
+                                }
+                                Rank r = new Rank(ranks.getKey(), name, s);
+                                rank.add(r);
+                            }
+
+                            int temp1 = sp.getInt("SCORE", 0);
+                            int temp2;
+                            String tempname = nickname;
+                            String tempname2;
+
+                            for(int p=0;p<rank.size();p++){
+                                tempname2=rank.get(p).getName();
+
+                                if(rank.get(p).getScore().equals("")){
+                                    temp2=0;
+
+                                }else{
+                                    temp2=Integer.parseInt(rank.get(p).getScore());
+                                }
+
+                                if(rank.get(p).getName().equals("")){
+                                    rank.get(p).setName(tempname);
+                                    rank.get(p).setScore(String.valueOf(temp1));
+                                    temp1=temp2;
+                                    tempname=tempname2;
+
+                                }else if (temp2<temp1){
+                                    rank.get(p).setName(tempname);
+                                    rank.get(p).setScore(String.valueOf(temp1));
+                                    temp1=temp2;
+                                    tempname=tempname2;
+                                }
+                            }
+                            updateRanking();
+
+                            rank.clear();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Toast.makeText(getApplicationContext(), "No internet connection", Toast.LENGTH_SHORT);
+                        }
+                    });
+                    Dialog.dismiss();
+                }
             }
         }
     }
 
-    public void setNavHeader(){
+    private void updateRanking() {
+
+        String name1 = rank.get(0).getName();
+        String score1 =  rank.get(0).getScore();
+        String name2 =  rank.get(1).getName();
+        String score2 = rank.get(1).getScore();
+        String name3 = rank.get(2).getName();
+        String score3 = rank.get(2).getScore();
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference();
+        DatabaseReference rankRef = ref.child("Rank");
+        DatabaseReference rankingRef = ref.child("Rank");
+
+        Map  nameUpdate =  new HashMap();
+        nameUpdate.put("1/Name", name1);
+        nameUpdate.put("2/Name", name2);
+        nameUpdate.put("3/Name", name3);
+        rankRef.updateChildren(nameUpdate);
+
+        Map  scoreUpdate =  new HashMap();
+        scoreUpdate.put("1/Score", score1);
+        scoreUpdate.put("2/Score", score2);
+        scoreUpdate.put("3/Score", score3);
+        rankingRef.updateChildren(scoreUpdate);
+
+    }
+
+    public void setNavHeader() {
         sp = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sp.edit();
 
@@ -292,19 +381,20 @@ public class HomeActivity extends AppCompatActivity
         textViewScore = headView.findViewById(R.id.textViewScore);
 
         String nickname = sp.getString(getString(R.string.preference_nickname),"");
-        textViewNickname.setText(nickname);
+        if (!nickname.equals("")){
+            textViewNickname.setText(nickname);
+            textViewScore.setText("");
+        }
 
-        textViewScore.setText("Score: 120");
+        String picNo = sp.getString(getString(R.string.preference_profilepic), "");
 
-        String picNo = sp.getString(getString(R.string.preference_profilepic),"");
-
-        if (picNo.equals("1")){
+        if (picNo.equals("1")) {
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_girl_1));
-        }else   if (picNo.equals("2")){
+        } else if (picNo.equals("2")) {
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_girl_2));
-        }else   if (picNo.equals("3")){
+        } else if (picNo.equals("3")) {
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_1));
-        }else   if (picNo.equals("4")){
+        } else if (picNo.equals("4")) {
             imageViewProfilePicture.setImageDrawable(getResources().getDrawable(R.drawable.ic_boy_2));
         }
 
