@@ -214,9 +214,8 @@ public class EventActivity extends AppCompatActivity
         String nickname = sp.getString(getString(R.string.preference_nickname),"");
         if (!nickname.equals("")){
             textViewNickname.setText(nickname);
+            textViewScore.setText("Score: " + String.valueOf(sp.getInt("SCORE", 0)));
         }
-
-        textViewScore.setText("Score: 120");
 
         String picNo = sp.getString(getString(R.string.preference_profilepic),"");
 

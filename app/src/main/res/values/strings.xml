@@ -23,7 +23,6 @@
     <string name="name">Name</string>
     <string name="start">START</string>
 
-
     <string name="preference_nickname">PREF_NICKNAME</string>
     <string name="hint">Eg: Alice</string>
     <string name="enter_nickname">Please enter your nickname!</string>
@@ -37,4 +36,5 @@
     <string name="title_section3">Section 3</string>
 
     <string name="action_example">Example action</string>
+    <string name="challenge_mission">Are you ready to challenge the mission?!</string>
 </resources>

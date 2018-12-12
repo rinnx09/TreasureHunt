@@ -1,5 +1,8 @@
 package com.example.rinnxyii.treasurehunt;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Rank {
     private String place;
     private String name;
@@ -42,4 +45,5 @@ public class Rank {
     public void setScore(String score) {
         this.score = score;
     }
+
 }

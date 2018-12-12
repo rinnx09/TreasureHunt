@@ -16,11 +16,11 @@
         android:id="@+id/textViewMission"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="120dp"
+        android:text="@string/challenge_mission"
         android:textAlignment="center"
-        android:textSize="30dp"
-        android:text="@string/mission"
-        />
+        android:textSize="30dp" />
 
     <Button
         android:id="@+id/mission"
@@ -34,13 +34,13 @@
     <TextView
         android:id="@+id/tresult"
         android:layout_width="wrap_content"
-        android:layout_height="91dp"
+        android:layout_height="140dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="59dp"
-        android:layout_marginEnd="87dp"
-        android:layout_marginBottom="130dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="74dp"
+        android:layout_marginBottom="157dp"
         android:textAlignment="center" />
 
     <Button
